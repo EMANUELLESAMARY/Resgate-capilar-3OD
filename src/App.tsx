@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   CheckCircle2, 
   ArrowRight, 
@@ -20,9 +20,77 @@ import {
   Instagram,
   Mail,
   Phone,
-  MessageSquare
+  MessageSquare,
+  ShoppingBag
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+
+const NAMES = [
+  'Ana', 'Bruno', 'Carla', 'Diego', 'Elena', 'Fábio', 'Gabriela', 'Hugo', 'Isabela', 'João',
+  'Kátia', 'Lucas', 'Mariana', 'Nuno', 'Olívia', 'Paulo', 'Quitéria', 'Ricardo', 'Sofia', 'Tiago',
+  'Úrsula', 'Vitor', 'Wanda', 'Xavier', 'Yara', 'Zeca', 'Beatriz', 'Caio', 'Daniela', 'Eduardo'
+];
+
+const CITIES = [
+  'São Paulo/SP', 'Rio de Janeiro/RJ', 'Belo Horizonte/MG', 'Salvador/BA', 'Fortaleza/CE',
+  'Brasília/DF', 'Curitiba/PR', 'Manaus/AM', 'Recife/PE', 'Porto Alegre/RS', 'Belém/PA',
+  'Goiânia/GO', 'Guarulhos/SP', 'Campinas/SP', 'São Luís/MA', 'São Gonçalo/RJ', 'Maceió/AL',
+  'Duque de Caxias/RJ', 'Natal/RN', 'Teresina/PI', 'São Bernardo do Campo/SP', 'Campo Grande/MS',
+  'Jaboatão dos Guararapes/PE', 'Osasco/SP', 'Santo André/SP', 'João Pessoa/PB', 'Uberlândia/MG',
+  'Contagem/MG', 'Sorocaba/SP', 'Ribeirão Preto/SP'
+];
+
+const SalesNotification = () => {
+  const [visible, setVisible] = useState(false);
+  const [data, setData] = useState({ name: '', city: '' });
+
+  useEffect(() => {
+    const showPopup = () => {
+      const randomName = NAMES[Math.floor(Math.random() * NAMES.length)];
+      const randomCity = CITIES[Math.floor(Math.random() * CITIES.length)];
+      setData({ name: randomName, city: randomCity });
+      setVisible(true);
+
+      // Hide after 5 seconds
+      setTimeout(() => {
+        setVisible(false);
+        // Schedule next one
+        const delay = Math.floor(Math.random() * (80000 - 50000 + 1)) + 50000;
+        setTimeout(showPopup, delay);
+      }, 5000);
+    };
+
+    // First appearance after 8 seconds
+    const initialTimeout = setTimeout(showPopup, 8000);
+
+    return () => clearTimeout(initialTimeout);
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity: 0, y: 50, x: -20 }}
+          animate={{ opacity: 1, y: 0, x: 0 }}
+          exit={{ opacity: 0, y: 20, transition: { duration: 0.2 } }}
+          className="fixed bottom-6 left-6 z-[100] max-w-[280px] w-full"
+        >
+          <div className="glass-card bg-white/90 backdrop-blur-xl p-4 flex items-center gap-4 shadow-2xl border-l-4 border-accent">
+            <div className="bg-accent/10 p-2 rounded-full shrink-0">
+              <ShoppingBag size={20} className="text-accent" />
+            </div>
+            <div className="text-xs sm:text-sm">
+              <p className="font-bold text-primary leading-tight">
+                {data.name} de {data.city}
+              </p>
+              <p className="text-gray-500">acabou de adquirir o Resgate Capilar 30D</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
 
 const PrimaryButton = ({ children, onClick, className = "" }: { children: React.ReactNode, onClick?: () => void, className?: string }) => (
   <button 
@@ -90,14 +158,13 @@ const TestimonialCard = ({ name, role, text, image }: { name: string, role: stri
 );
 
 export default function App() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-
   const scrollToOffer = () => {
     document.getElementById('offer')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
     <div className="min-h-screen font-sans text-gray-900 overflow-x-hidden">
+      <SalesNotification />
       {/* Header / Announcement */}
       <div className="bg-primary text-white text-center py-2 text-xs sm:text-sm font-medium uppercase tracking-widest">
         Oferta exclusiva de lançamento — Dra. Emanuelle Samary
@@ -105,28 +172,28 @@ export default function App() {
 
       {/* Hero Section */}
       <header className="relative pt-12 pb-24">
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center relative z-10">
+        <div className="max-w-5xl mx-auto px-6 relative z-10 text-center">
           <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="glass-card p-10"
+            className="glass-card p-10 md:p-16"
           >
-            <div className="inline-flex items-center gap-2 bg-accent px-4 py-1.5 rounded-sm text-white text-sm font-black mb-6 uppercase">
+            <div className="inline-flex items-center gap-2 bg-accent px-4 py-1.5 rounded-sm text-white text-sm font-black mb-6 uppercase mx-auto">
               RESGATE CAPILAR 30 D
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-5xl font-black text-primary leading-tight mb-8">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-primary leading-tight mb-8">
               Recupere seus fios em <span className="text-accent">30 dias</span> — ou continue vendo seu cabelo cair no ralo todos os dias
             </h1>
-            <p className="text-xl text-gray-600 mb-10 leading-relaxed max-w-xl">
+            <p className="text-xl text-gray-600 mb-10 leading-relaxed max-w-2xl mx-auto">
               Reduza a queda capilar e fortaleça seus fios em 30 dias com um protocolo simples, prático e baseado em ciência.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center gap-6 mb-8">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8">
               <PrimaryButton onClick={scrollToOffer}>
                 Quero me inscrever agora
               </PrimaryButton>
-              <div>
+              <div className="text-left">
                 <p className="text-sm text-gray-400 line-through">De R$197</p>
                 <p className="text-2xl font-black text-accent">Por R$37</p>
               </div>
@@ -135,36 +202,6 @@ export default function App() {
             <p className="text-sm text-gray-400 italic">
               *Acesso imediato ao protocolo digital após a confirmação.
             </p>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            className="relative"
-          >
-            <div className="rounded-3xl overflow-hidden border-4 border-white/10 shadow-2xl relative aspect-[4/5] sm:aspect-square">
-              <img 
-                src="https://picsum.photos/seed/haircare/800/800" 
-                alt="Transformação Capilar" 
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1a011a] via-transparent to-transparent opacity-60" />
-            </div>
-            
-            {/* Float Elements */}
-            <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl hidden sm:block">
-              <div className="flex items-center gap-3">
-                <div className="bg-green-100 text-green-600 p-2 rounded-full">
-                  <CheckCircle2 size={24} />
-                </div>
-                <div>
-                  <p className="font-bold text-[#1a011a]">+2.500</p>
-                  <p className="text-xs text-gray-500">Vidas transformadas</p>
-                </div>
-              </div>
-            </div>
           </motion.div>
         </div>
       </header>
@@ -268,40 +305,36 @@ export default function App() {
 
       {/* Practical Example */}
       <section className="py-24">
-        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
-          <div className="glass-card p-10">
-            <span className="text-accent font-black italic text-lg mb-4 block">EXEMPLO PRÁTICO</span>
-            <h2 className="text-3xl sm:text-4xl font-black mb-8 leading-tight text-primary uppercase">Ignorar é o pior erro</h2>
-            <div className="space-y-6 text-gray-600">
-              <p>Uma pessoa perde 10kg em poucas semanas. No início, comemora.</p>
-              <p>Dias depois, entra em desespero ao ver tufos de cabelo caindo no banho. Tenta trocar shampoo, compra suplementos aleatórios e continua piorando.</p>
-              <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10">
-                <h4 className="text-accent font-bold mb-2 uppercase text-sm">Com o protocolo:</h4>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3 text-sm">
-                    <CheckCircle2 className="text-accent mt-1 shrink-0" size={18} />
-                    <span>Usa o termômetro → descobre o risco alto.</span>
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="glass-card p-10 md:p-16 text-center">
+            <span className="text-accent font-black italic text-lg mb-4 block underline decoration-accent/30 underline-offset-8">EXEMPLO PRÁTICO</span>
+            <h2 className="text-3xl sm:text-4xl font-black mb-10 leading-tight text-primary uppercase">Ignorar é o pior erro</h2>
+            <div className="space-y-6 text-gray-600 text-left max-w-2xl mx-auto">
+              <p className="text-lg">Uma pessoa perde 10kg em poucas semanas. No início, comemora.</p>
+              <p className="text-lg">Dias depois, entra em desespero ao ver tufos de cabelo caindo no banho. Tenta trocar shampoo, compra suplementos aleatórios e continua piorando.</p>
+              <div className="bg-primary/5 p-8 rounded-2xl border border-primary/10 shadow-inner">
+                <h4 className="text-accent font-bold mb-6 uppercase text-sm tracking-widest text-center border-b border-accent/20 pb-4">Com o protocolo:</h4>
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-4">
+                    <div className="bg-accent/10 p-1 rounded-full">
+                      <CheckCircle2 className="text-accent shrink-0" size={20} />
+                    </div>
+                    <span className="font-medium text-primary">Usa o termômetro → descobre o risco real e para de agir no escuro.</span>
                   </li>
-                  <li className="flex items-start gap-3 text-sm">
-                    <CheckCircle2 className="text-accent mt-1 shrink-0" size={18} />
-                    <span>Ajusta alimentação → corrige deficiências.</span>
+                  <li className="flex items-start gap-4">
+                    <div className="bg-accent/10 p-1 rounded-full">
+                      <CheckCircle2 className="text-accent shrink-0" size={20} />
+                    </div>
+                    <span className="font-medium text-primary">Ajusta alimentação estratégica → corrige as deficiências que causam a queda.</span>
                   </li>
-                  <li className="flex items-start gap-3 text-sm">
-                    <CheckCircle2 className="text-accent mt-1 shrink-0" size={18} />
-                    <span>Reduz a queda drasticamente em semanas.</span>
+                  <li className="flex items-start gap-4">
+                    <div className="bg-accent/10 p-1 rounded-full">
+                      <CheckCircle2 className="text-accent shrink-0" size={20} />
+                    </div>
+                    <span className="font-medium text-primary">Estabilização rápida → Reduz a queda drasticamente em poucas semanas.</span>
                   </li>
                 </ul>
               </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-4 pt-12">
-              <img src="https://picsum.photos/seed/h1/400/500" alt="Hair analysis" className="rounded-2xl w-full h-64 object-cover glass-card p-1" referrerPolicy="no-referrer" />
-              <img src="https://picsum.photos/seed/h2/400/300" alt="Vitamins" className="rounded-2xl w-full h-48 object-cover glass-card p-1" referrerPolicy="no-referrer" />
-            </div>
-            <div className="space-y-4">
-              <img src="https://picsum.photos/seed/h3/400/300" alt="Healthy Hair" className="rounded-2xl w-full h-48 object-cover glass-card p-1" referrerPolicy="no-referrer" />
-              <img src="https://picsum.photos/seed/h4/400/500" alt="Doctor consulting" className="rounded-2xl w-full h-64 object-cover glass-card p-1" referrerPolicy="no-referrer" />
             </div>
           </div>
         </div>
@@ -340,34 +373,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <SectionTitle subtitle="O que dizem as pessoas que já aplicaram o protocolo.">
-            Resultados que falam por eles mesmos
-          </SectionTitle>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <TestimonialCard 
-              name="Carla Silva"
-              role="Emagreceu 15kg"
-              text="Eu estava desesperada trocando de shampoo toda semana. O termômetro me mostrou que meu problema era nutricional. Em 3 semanas a queda parou."
-              image="https://i.pravatar.cc/150?u=carla"
-            />
-            <TestimonialCard 
-              name="Mariana Costa"
-              role="Pós-Bariátrica"
-              text="O bônus de skincare foi uma surpresa incrível. Estou cuidando do rosto e do cabelo ao mesmo tempo. Me sinto nova de novo!"
-              image="https://i.pravatar.cc/150?u=mariana"
-            />
-            <TestimonialCard 
-              name="Ricardo Alves"
-              role="Perda de 12kg"
-              text="As entradas estavam ficando muito aparentes. Com as técnicas de estímulo, já noto novos fios nascendo onde era só pele."
-              image="https://i.pravatar.cc/150?u=ricardo"
-            />
-          </div>
-        </div>
-      </section>
       <section id="offer" className="py-24">
         <div className="max-w-xl mx-auto px-6 text-center relative overflow-hidden">
           <div className="glass-card p-10 sm:p-16 border-2 border-primary/10">
@@ -401,81 +406,44 @@ export default function App() {
       {/* Author Section */}
       <section className="py-24">
         <div className="max-w-5xl mx-auto px-6 glass-card p-12 flex flex-col md:flex-row items-center gap-12">
-          <div className="w-40 h-40 sm:w-56 sm:h-56 shrink-0 relative">
-            <div className="absolute inset-0 bg-primary rounded-full -rotate-6 opacity-10" />
+          <div className="w-48 h-48 sm:w-64 sm:h-64 shrink-0 relative">
+            <div className="absolute inset-0 bg-primary rounded-2xl rotate-3 opacity-10" />
             <img 
-              src="https://picsum.photos/seed/doc/400/400" 
+              src="https://i.postimg.cc/59HbDx7k/IMG-2271-(squo1).jpg" 
               alt="Dra. Emanuelle Samary" 
-              className="w-full h-full object-cover rounded-full relative z-10 border-4 border-white shadow-xl"
+              className="w-full h-full object-cover rounded-2xl relative z-10 border-4 border-white shadow-xl"
               referrerPolicy="no-referrer"
             />
           </div>
           <div>
-            <span className="text-accent font-bold uppercase tracking-widest text-sm mb-2 block font-black">QUEM TE GUIARÁ</span>
-            <h2 className="text-4xl font-black text-primary mb-6">Dra. Emanuelle Samary</h2>
+            <span className="text-accent font-bold uppercase tracking-widest text-sm mb-2 block font-black">Sua guia nessa jornada:</span>
+            <h2 className="text-4xl font-black text-primary mb-6">Dra Emanuelle Samary</h2>
             <div className="space-y-4 text-gray-700 leading-relaxed text-lg">
               <p>
-                Médica com atuação em saúde capilar, nutrologia e estética, dedicada a tratar a raiz dos problemas — conectando metabolismo, nutrição e cuidado real para resultados consistentes.
+                Médica desde 2013, com atuação em Saúde Capilar, Nutrologia e Estética. Dedico minha prática clínica a tratar a raiz dos problemas. Vi milhares de pacientes perdendo a autoestima após o emagrecimento. O problema não é falta de shampoo, é um colapso metabólico capilar.
               </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Form */}
-      <section className="py-24">
-        <div className="max-w-3xl mx-auto px-6">
-          <div className="glass-card p-10">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-black text-primary mb-4 uppercase">Dúvidas?</h2>
-              <p className="text-gray-600">Nossa equipe de suporte está pronta para te ajudar.</p>
-            </div>
-            
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-              <div className="grid sm:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-bold text-primary mb-2">Seu Nome</label>
-                  <input 
-                    type="text" 
-                    className="w-full bg-white/50 border border-primary/10 rounded-xl px-4 py-3 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all"
-                    placeholder="Como podemos te chamar?"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  />
+              <p className="font-medium text-primary py-4 border-y border-primary/5 italic">
+                Este protocolo condensa meu raciocínio clínico para que você recupere seus fios sem precisar gastar fortunas em consultório.
+              </p>
+              
+              <div className="grid grid-cols-2 gap-4 pt-4">
+                <div className="flex items-center gap-2 text-sm font-bold text-primary">
+                  <CheckCircle2 size={16} className="text-accent" /> Raciocínio Clínico
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-primary mb-2">E-mail</label>
-                  <input 
-                    type="email" 
-                    className="w-full bg-white/50 border border-primary/10 rounded-xl px-4 py-3 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all"
-                    placeholder="E-mail principal"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  />
+                <div className="flex items-center gap-2 text-sm font-bold text-primary">
+                  <CheckCircle2 size={16} className="text-accent" /> Densidade Real
+                </div>
+                <div className="flex items-center gap-2 text-sm font-bold text-primary">
+                  <CheckCircle2 size={16} className="text-accent" /> Fim da Queda
+                </div>
+                <div className="flex items-center gap-2 text-sm font-bold text-primary">
+                  <CheckCircle2 size={16} className="text-accent" /> Rapidez nos Resultados
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-bold text-primary mb-2">Sua Mensagem</label>
-                <textarea 
-                  rows={4}
-                  className="w-full bg-white/50 border border-primary/10 rounded-xl px-4 py-3 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all"
-                  placeholder="Como podemos te ajudar hoje?"
-                  value={formData.message}
-                  onChange={(e) => setFormData({...formData, message: e.target.value})}
-                />
-              </div>
-              <button className="w-full bg-primary text-white font-bold py-4 rounded-xl hover:opacity-90 transition-opacity uppercase tracking-widest shadow-lg">
-                Enviar Mensagem
-              </button>
-            </form>
-          </div>
-          
-          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-gray-500">
-            <div className="flex items-center gap-2">
-              <Instagram size={18} className="text-accent" /> @dra.emanuellesamary
-            </div>
-            <div className="flex items-center gap-2">
-              <Mail size={18} className="text-accent" /> suporte@recuperacaocapilar.com
+              
+              <p className="mt-8 text-accent font-black text-sm uppercase tracking-tighter bg-accent/5 p-4 rounded-xl border border-accent/10">
+                🚀 Protocolo de choque para ver os primeiros resultados ja em 30 dias.
+              </p>
             </div>
           </div>
         </div>
