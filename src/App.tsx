@@ -195,7 +195,10 @@ export default function App() {
               </PrimaryButton>
               <div className="text-left">
                 <p className="text-sm text-gray-400 line-through">De R$197</p>
-                <p className="text-2xl font-black text-accent">Por R$37</p>
+                <div className="flex flex-col">
+                  <p className="text-2xl font-black text-accent leading-none">R$ 37,00 à vista</p>
+                  <p className="text-sm font-bold text-primary mt-1">ou 5x de R$ 8,19</p>
+                </div>
               </div>
             </div>
             
@@ -380,11 +383,17 @@ export default function App() {
             <p className="text-gray-600 mb-12 text-lg">A oportunidade de reverter o dano capilar é agora. Não espere ficar irreversível.</p>
             
             <div className="mb-10">
-              <p className="text-gray-400 line-through text-xl">R$ 197,00</p>
-              <div className="flex items-center justify-center gap-2">
-                <span className="text-5xl sm:text-6xl font-black text-accent">R$ 37</span>
+              <p className="text-gray-400 line-through text-xl mb-2">R$ 197,00</p>
+              <div className="flex flex-col items-center justify-center">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-sm font-bold text-primary uppercase">Por apenas</span>
+                  <span className="text-5xl sm:text-7xl font-black text-accent">R$ 37,00</span>
+                  <span className="text-sm font-bold text-primary uppercase">à vista</span>
+                </div>
+                <div className="mt-4 bg-accent/5 px-6 py-2 rounded-full border border-accent/10">
+                  <p className="text-xl font-bold text-primary">ou 5x de <span className="text-accent underline">R$ 8,19</span></p>
+                </div>
               </div>
-              <p className="text-primary font-bold mt-2">Pagamento Único.</p>
             </div>
             
             <PrimaryButton className="w-full text-xl py-6">
